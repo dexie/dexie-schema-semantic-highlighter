@@ -4,6 +4,11 @@
   "description": "Semantic highlighting for Dexie schema strings and a simple '#' line comment rule.",
   "publisher": "your-name",
   "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dexie/dexie-schema-semantic-highlighter.git"
+  },
   "engines": { "vscode": "^1.90.0" },
   "categories": ["Programming Languages"],
   "activationEvents": [

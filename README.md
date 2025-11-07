@@ -39,8 +39,9 @@ From source (development):
 
 Package a VSIX (optional):
 1. `npm run compile`
-2. `npx vsce package`
-3. In VS Code, run “Extensions: Install from VSIX…” and pick the generated file.
+2. `npx vsce package` (generates `dexie-schema-semantic-highlighter-0.0.1.vsix`)
+3. In VS Code: Command Palette → “Extensions: Install from VSIX…” → select the generated `.vsix`.
+4. Reload the window if prompted.
 
 Open a JS/TS file with code like:
 
