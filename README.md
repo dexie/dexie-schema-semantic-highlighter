@@ -60,14 +60,16 @@ If your theme doesn't color these semantic tokens as you like, add to your user 
 ```json
 "editor.semanticTokenColorCustomizations": {
   "rules": {
-    "dexieKey":   { "fontStyle": "" },
-    "dexieOp":    { "fontStyle": "bold" },
+    "dexieOp":    { "fontStyle": "bold", "foreground": "#2677cc" },
+    "dexieKey":   { "foreground": "#888888" },
     "dexiePunct": { "fontStyle": "" },
     "dexieType":  { "fontStyle": "italic" },
     "comment":    { "fontStyle": "italic" }
   }
 }
 ```
+
+Example goal ("++" blue, keys gray): set `dexieOp` to your preferred blue and `dexieKey` to a neutral gray as above. Because `dexieKey` now uses the `property` superType internally, some themes may already differentiate it; the explicit color rule ensures consistency across themes.
 
 Tip: Use the “Developer: Inspect Editor Tokens and Scopes” command in VS Code to check the actual token type at the cursor.
 

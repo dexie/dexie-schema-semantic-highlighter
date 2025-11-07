@@ -9,7 +9,8 @@ const STORES_BLOCK = /\.version\s*\([^)]*\)\s*\.stores\s*\(\s*\{[\s\S]*?\}\s*\)/
 const KEY_TEMPLATE = /:\s*`([\s\S]*?)`/g;
 
 /** Tiny tokenizer for Dexie schema mini-DSL. */
-const TOKEN_REGEX = /\+\+|&|\*|\[|\]|,|[A-Za-z_$][\w$]*/g;
+// Note: order matters; '++' must come before '+' so we don't split it.
+const TOKEN_REGEX = /\+\+|\+|&|\*|\[|\]|,|[A-Za-z_$][\w$]*/g;
 
 // Define our token types once and reuse for legend and indexing
 const TOKEN_TYPES = ['dexieKey', 'dexieOp', 'dexiePunct', 'dexieType', 'comment'] as const;
@@ -39,6 +40,56 @@ function findSchemaTemplateRanges(fullText: string): Array<{ start: number; end:
       ranges.push({ start, end });
     }
   }
+  return ranges;
+}
+
+/**
+ * Find markdown fenced code blocks for specified languages and return content ranges (start..end exclusive)
+ * for the code inside the fence (i.e., excluding the ```... lines).
+ * Supported fences: ```lang\n ... \n```
+ */
+function findMarkdownCodeFences(fullText: string, languages: string[]): Array<{ start: number; end: number }> {
+  const langs = new Set(languages.map(l => l.toLowerCase()));
+  const ranges: Array<{ start: number; end: number }> = [];
+
+  const lines = fullText.split(/\n/);
+  let offset = 0; // absolute offset at start of current line
+  let inFence = false;
+  let fenceLang: string | null = null;
+  let fenceStartAbs = -1; // start of content (line after opening fence)
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const lineLenWithNL = line.length + 1; // assume \n split
+
+    if (!inFence) {
+      // Opening fence: starts with ``` optionally preceded by spaces
+      const m = line.match(/^\s*```([A-Za-z0-9_+-]+)/);
+      if (m) {
+        fenceLang = m[1].toLowerCase();
+        inFence = langs.has(fenceLang);
+        // Content starts on next line
+        if (inFence) {
+          fenceStartAbs = offset + line.length + 1; // beginning of next line
+        }
+      }
+    } else {
+      // Closing fence: line that starts with ```
+      if (/^\s*```\s*$/.test(line)) {
+        const fenceEndAbs = offset; // start of this line (exclusive of closing fence)
+        if (fenceStartAbs >= 0 && fenceEndAbs > fenceStartAbs) {
+          ranges.push({ start: fenceStartAbs, end: fenceEndAbs });
+        }
+        inFence = false;
+        fenceLang = null;
+        fenceStartAbs = -1;
+      }
+    }
+
+    offset += lineLenWithNL;
+  }
+
+  // If fence wasn't closed, ignore it (no range push)
   return ranges;
 }
 
@@ -128,8 +179,11 @@ function tokenizeSchemaContent(
       // Classify token
       if (token === '++' || token === '&' || token === '*') {
         t = 'dexieOp';
-      } else if (token === '[' || token === ']' || token === ',') {
+      } else if (token === ',') {
         t = 'dexiePunct';
+      } else if (token === '[' || token === ']' || token === '+') {
+        // Render brackets and plus like keys to match requested visual style
+        t = 'dexieKey';
       } else {
         t = 'dexieKey';
       }
@@ -188,14 +242,30 @@ export function activate(context: vscode.ExtensionContext) {
       const builder = new vscode.SemanticTokensBuilder(legend);
       const text = document.getText();
 
-      // 1) Global '#' comment rule across the entire file
-      tokenizeHashCommentsWholeFile(builder, document);
+      const lang = document.languageId;
 
-      // 2) Dexie schema inside db.version(...).stores({ key: `...` })
-      const ranges = findSchemaTemplateRanges(text);
-      for (const r of ranges) {
-        const schema = text.slice(r.start, r.end);
-        tokenizeSchemaContent(builder, document, r.start, schema);
+      if (lang === 'markdown') {
+        // Only highlight inside fenced code blocks of JS/TS flavors; do not apply global '#' rule to avoid coloring headings.
+        const fences = findMarkdownCodeFences(text, ['javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'js', 'ts', 'jsx', 'tsx']);
+        for (const fence of fences) {
+          const fenceText = text.slice(fence.start, fence.end);
+          const schemaRanges = findSchemaTemplateRanges(fenceText);
+          for (const r of schemaRanges) {
+            const absStart = fence.start + r.start;
+            const schema = text.slice(absStart, fence.start + r.end);
+            tokenizeSchemaContent(builder, document, absStart, schema);
+          }
+        }
+      } else {
+        // 1) Global '#' comment rule across the entire file
+        tokenizeHashCommentsWholeFile(builder, document);
+
+        // 2) Dexie schema inside db.version(...).stores({ key: `...` })
+        const ranges = findSchemaTemplateRanges(text);
+        for (const r of ranges) {
+          const schema = text.slice(r.start, r.end);
+          tokenizeSchemaContent(builder, document, r.start, schema);
+        }
       }
 
       return builder.build();
@@ -203,7 +273,7 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   // Register for JS/TS (+ React variants)
-  ['javascript', 'typescript', 'javascriptreact', 'typescriptreact'].forEach((language) => {
+  ['javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'markdown'].forEach((language) => {
     const d = vscode.languages.registerDocumentSemanticTokensProvider(
       { language },
       provider,

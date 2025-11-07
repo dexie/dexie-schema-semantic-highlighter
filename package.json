@@ -3,37 +3,74 @@
   "displayName": "Dexie Schema Semantic Highlighter",
   "description": "Semantic highlighting for Dexie schema strings and a simple '#' line comment rule.",
   "publisher": "your-name",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/dexie/dexie-schema-semantic-highlighter.git"
   },
-  "engines": { "vscode": "^1.90.0" },
-  "categories": ["Programming Languages"],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
   "activationEvents": [
     "onLanguage:javascript",
     "onLanguage:typescript",
     "onLanguage:javascriptreact",
-    "onLanguage:typescriptreact"
+    "onLanguage:typescriptreact",
+    "onLanguage:markdown"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "semanticTokenTypes": [
-      { "id": "dexieKey", "description": "Dexie schema key", "superType": "variable" },
-      { "id": "dexieOp", "description": "Dexie schema operator", "superType": "operator" },
-      { "id": "dexiePunct", "description": "Dexie schema punctuation", "superType": "punctuation" },
-      { "id": "dexieType", "description": "Dexie schema type after ':'", "superType": "type" },
-      { "id": "comment", "description": "Line comments starting with #", "superType": "comment" }
-    ]
+      {
+        "id": "dexieKey",
+        "description": "Dexie schema key",
+        "superType": "property"
+      },
+      {
+        "id": "dexieOp",
+        "description": "Dexie schema operator",
+        "superType": "operator"
+      },
+      {
+        "id": "dexiePunct",
+        "description": "Dexie schema punctuation",
+        "superType": "operator"
+      },
+      {
+        "id": "dexieType",
+        "description": "Dexie schema type after ':'",
+        "superType": "type"
+      },
+      {
+        "id": "comment",
+        "description": "Line comments starting with #",
+        "superType": "comment"
+      }
+    ],
+    "configurationDefaults": {
+      "editor.semanticTokenColorCustomizations": {
+        "enabled": true,
+        "rules": {
+          "dexieOp": { "foreground": "#2677cc" },
+          "dexieKey": { "foreground": "#888888" }
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -w -p ./"
+    "watch": "tsc -w -p ./",
+    "package": "vsce package",
+    "publish": "vsce publish"
   },
   "devDependencies": {
     "@types/vscode": "^1.90.0",
+    "dexie": "^4.2.1",
     "typescript": "^5.6.2",
     "vsce": "^2.15.0"
   }
