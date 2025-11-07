@@ -3,7 +3,7 @@
   "displayName": "Dexie Schema Semantic Highlighter",
   "description": "Semantic highlighting for Dexie schema strings and a simple '#' line comment rule.",
   "publisher": "your-name",
-  "version": "0.0.3",
+  "version": "0.0.11",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
       {
         "id": "dexieKey",
         "description": "Dexie schema key",
-        "superType": "property"
+        "superType": "decorator"
       },
       {
         "id": "dexieOp",
@@ -55,8 +55,24 @@
       "editor.semanticTokenColorCustomizations": {
         "enabled": true,
         "rules": {
-          "dexieOp": { "foreground": "#2677cc" },
-          "dexieKey": { "foreground": "#888888" }
+          "dexieKey": {
+            "foreground": "#888888",
+            "fontStyle": "bold"
+          }
+        },
+        "[Dark Modern]": {
+          "rules": {
+            "dexieKey": {
+              "foreground": "#aaaaaa"
+            }
+          }
+        },
+        "[Light Modern]": {
+          "rules": {
+            "dexieKey": {
+              "foreground": "#222222"
+            }
+          }
         }
       }
     }

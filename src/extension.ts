@@ -232,12 +232,16 @@ function tokenizeHashCommentsWholeFile(builder: vscode.SemanticTokensBuilder, do
 }
 
 export function activate(context: vscode.ExtensionContext) {
+  // Allows us to trigger a semantic token refresh on demand
+  const onDidChangeEmitter = new vscode.EventEmitter<void>();
+
   const legend = new vscode.SemanticTokensLegend(
     [...TOKEN_TYPES],
     []
   );
 
   const provider: vscode.DocumentSemanticTokensProvider = {
+    onDidChangeSemanticTokens: onDidChangeEmitter.event,
     provideDocumentSemanticTokens(document) {
       const builder = new vscode.SemanticTokensBuilder(legend);
       const text = document.getText();
@@ -281,6 +285,12 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(d);
   });
+
+  // Command: manually refresh semantic tokens (helpful after settings/theme changes)
+  const refreshCmd = vscode.commands.registerCommand('dexieSchema.refreshTokens', () => {
+    onDidChangeEmitter.fire();
+  });
+  context.subscriptions.push(refreshCmd);
 }
 
 export function deactivate() {}
