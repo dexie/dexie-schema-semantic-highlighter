@@ -2,7 +2,7 @@
   "name": "dexie-schema-semantic-highlighter",
   "displayName": "Dexie Schema Semantic Highlighter",
   "description": "Semantic highlighting for Dexie schema strings and a simple '#' line comment rule.",
-  "publisher": "your-name",
+  "publisher": "dexie",
   "version": "0.0.11",
   "license": "MIT",
   "repository": {
@@ -12,9 +12,12 @@
   "engines": {
     "vscode": "^1.90.0"
   },
+  "keywords": ["dexie", "indexeddb", "schema", "highlighting", "semantic", "database"],
   "categories": [
     "Programming Languages"
   ],
+  "homepage": "https://dexie.org",
+  "bugs": "https://github.com/dexie/dexie-schema-semantic-highlighter/issues",
   "activationEvents": [
     "onLanguage:javascript",
     "onLanguage:typescript",
