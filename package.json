@@ -1,0 +1,35 @@
+{
+  "name": "dexie-schema-semantic-highlighter",
+  "displayName": "Dexie Schema Semantic Highlighter",
+  "description": "Semantic highlighting for Dexie schema strings and a simple '#' line comment rule.",
+  "publisher": "your-name",
+  "version": "0.0.1",
+  "engines": { "vscode": "^1.90.0" },
+  "categories": ["Programming Languages"],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "semanticTokenTypes": [
+      { "id": "dexieKey", "description": "Dexie schema key", "superType": "variable" },
+      { "id": "dexieOp", "description": "Dexie schema operator", "superType": "operator" },
+      { "id": "dexiePunct", "description": "Dexie schema punctuation", "superType": "punctuation" },
+      { "id": "dexieType", "description": "Dexie schema type after ':'", "superType": "type" },
+      { "id": "comment", "description": "Line comments starting with #", "superType": "comment" }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.6.2",
+    "vsce": "^2.15.0"
+  }
+}
