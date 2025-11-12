@@ -7,6 +7,8 @@ import * as vscode from 'vscode';
 const STORES_BLOCK = /\.version\s*\([^)]*\)\s*\.stores\s*\(\s*\{[\s\S]*?\}\s*\)/g;
 /** Regex to find ": `...`" or ": TYPE<...>`...`" inside the stores block (non-greedy, no interpolation handling). */
 const KEY_TEMPLATE = /:\s*(?:[A-Za-z_$][\w$]*(?:<[^>]*>)?)?\s*`([\s\S]*?)`/g;
+/** Regex to find standalone schema/model tagged templates: schema`...` or schema<T>`...` or model(T)`...` */
+const STANDALONE_SCHEMA = /\b(?:schema|model)\s*(?:<[^>]*>|\([^)]*\))?\s*`([\s\S]*?)`/g;
 
 /** Tiny tokenizer for Dexie schema mini-DSL. */
 // Note: order matters; '++' must come before '+' so we don't split it.
@@ -30,6 +32,7 @@ function findSchemaTemplateRanges(fullText: string): Array<{ start: number; end:
     return ranges;
   }
 
+  // 1) Find schemas inside .version().stores({ ... })
   while ((m = STORES_BLOCK.exec(fullText))) {
     const blockText = m[0];
     const blockStart = m.index;
@@ -45,6 +48,23 @@ function findSchemaTemplateRanges(fullText: string): Array<{ start: number; end:
       ranges.push({ start, end });
     }
   }
+
+  // 2) Find standalone schema`...` or model(...)`...` templates
+  STANDALONE_SCHEMA.lastIndex = 0;
+  while ((m = STANDALONE_SCHEMA.exec(fullText))) {
+    // m[1] is the captured template content (inside backticks)
+    const fullMatch = m[0];
+    const templateContent = m[1];
+    const matchStart = m.index;
+    
+    // Find where the backtick starts in the full match
+    const backtickOffset = fullMatch.indexOf('`');
+    const start = matchStart + backtickOffset + 1; // after opening `
+    const end = start + templateContent.length;    // before closing `
+    
+    ranges.push({ start, end });
+  }
+
   return ranges;
 }
 
