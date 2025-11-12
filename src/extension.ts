@@ -5,8 +5,8 @@ import * as vscode from 'vscode';
  * We will then look for occurrences of "key: `...`" inside and tokenize the template content.
  */
 const STORES_BLOCK = /\.version\s*\([^)]*\)\s*\.stores\s*\(\s*\{[\s\S]*?\}\s*\)/g;
-/** Regex to find ": `...`" inside the stores block (non-greedy, no interpolation handling). */
-const KEY_TEMPLATE = /:\s*`([\s\S]*?)`/g;
+/** Regex to find ": `...`" or ": TYPE<...>`...`" inside the stores block (non-greedy, no interpolation handling). */
+const KEY_TEMPLATE = /:\s*(?:[A-Za-z_$][\w$]*(?:<[^>]*>)?)?\s*`([\s\S]*?)`/g;
 
 /** Tiny tokenizer for Dexie schema mini-DSL. */
 // Note: order matters; '++' must come before '+' so we don't split it.
