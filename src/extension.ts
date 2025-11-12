@@ -25,6 +25,11 @@ function findSchemaTemplateRanges(fullText: string): Array<{ start: number; end:
   const ranges: Array<{ start: number; end: number }> = [];
   let m: RegExpExecArray | null;
 
+  // Performance safeguard: skip regex on very large files (>1MB)
+  if (fullText.length > 1_000_000) {
+    return ranges;
+  }
+
   while ((m = STORES_BLOCK.exec(fullText))) {
     const blockText = m[0];
     const blockStart = m.index;
@@ -51,6 +56,11 @@ function findSchemaTemplateRanges(fullText: string): Array<{ start: number; end:
 function findMarkdownCodeFences(fullText: string, languages: string[]): Array<{ start: number; end: number }> {
   const langs = new Set(languages.map(l => l.toLowerCase()));
   const ranges: Array<{ start: number; end: number }> = [];
+
+  // Performance safeguard: skip on very large markdown files
+  if (fullText.length > 500_000) {
+    return ranges;
+  }
 
   const lines = fullText.split(/\n/);
   let offset = 0; // absolute offset at start of current line
