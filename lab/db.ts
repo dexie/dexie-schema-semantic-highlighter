@@ -1,32 +1,23 @@
 import Dexie from "dexie";
 
+
+
 const db = new Dexie("myDexie");
 
 db.version(1).stores({
   friends: `
-    ++id
-    name: Text    # Case insensitive name
-    age           # Indexing age
+    +id # Primary key
+
+    # The following indexes are created for efficient querying:
+    name
+    age
+    *tags           # Multi-entry index for tags array
+
+    # Specific Y.js support:
     doc: Y.Doc 
-    [name+age]    # Compound index on name and age
-    address.city  # Indexing city inside address object
-  `,
-  pets: `
-    ++id
-    name          # Indexing pet name
-    type          # Indexing pet type
-    ownerId       # Indexing owner ID
+
+    [name+age]      # Compound index on name and age
+    address.city    # Indexing city inside address object
+
   `
 });
-
-const x = {
-  friends: {
-    id: 1,
-    name: "Alice",
-    age: 30,
-    doc: "kj",
-    address: {
-      city: "Wonderland"
-    }
-  }
-};

@@ -10,7 +10,7 @@ const KEY_TEMPLATE = /:\s*`([\s\S]*?)`/g;
 
 /** Tiny tokenizer for Dexie schema mini-DSL. */
 // Note: order matters; '++' must come before '+' so we don't split it.
-const TOKEN_REGEX = /\+\+|\+|&|\*|\[|\]|,|[A-Za-z_$][\w$]*/g;
+const TOKEN_REGEX = /\+\+|\+|&|@|\*|\[|\]|,|[A-Za-z_$][\w$]*/g;
 
 // Define our token types once and reuse for legend and indexing
 const TOKEN_TYPES = ['dexieKey', 'dexieOp', 'dexiePunct', 'dexieType', 'comment'] as const;
@@ -177,7 +177,7 @@ function tokenizeSchemaContent(
       let t: TokenKind = 'dexieKey';
 
       // Classify token
-      if (token === '++' || token === '&' || token === '*') {
+      if (token === '++' || token === '&' || token === '*' || token === '@') {
         t = 'dexieOp';
       } else if (token === ',') {
         t = 'dexiePunct';

@@ -3,7 +3,7 @@
   "displayName": "Dexie Schema Semantic Highlighter",
   "description": "Semantic highlighting for Dexie schema strings and a simple '#' line comment rule.",
   "publisher": "dexie",
-  "version": "0.0.12",
+  "version": "0.0.14",
   "license": "MIT",
   "repository": {
     "type": "git",
