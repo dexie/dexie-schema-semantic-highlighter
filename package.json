@@ -81,7 +81,12 @@
           }
         }
       }
-    }
+    },
+    "galleryBanner": { "color": "#1e1e1e", "theme": "dark" },
+    "icon": "images/icon.png",
+    "screenshots": [
+      { "path": "images/screenshot1.png", "caption": "Dexie schema highlighting in action" }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
