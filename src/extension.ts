@@ -7,8 +7,8 @@ import * as vscode from 'vscode';
 const STORES_BLOCK = /\.version\s*\([^)]*\)\s*\.stores\s*\(\s*\{[\s\S]*?\}\s*\)/g;
 /** Regex to find ": `...`" or ": TYPE<...>`...`" inside the stores block (non-greedy, no interpolation handling). */
 const KEY_TEMPLATE = /:\s*(?:[A-Za-z_$][\w$]*(?:<[^>]*>)?)?\s*`([\s\S]*?)`/g;
-/** Regex to find standalone schema/model tagged templates: schema`...` or schema<T>`...` or model(T)`...` */
-const STANDALONE_SCHEMA = /\b(?:schema|model)\s*(?:<[^>]*>|\([^)]*\))?\s*`([\s\S]*?)`/g;
+/** Regex to find standalone Table tagged templates: Table`...` or Table<T>`...` or Table(T)`...` */
+const STANDALONE_SCHEMA = /\bTable\s*(?:<[^>]*>|\([^)]*\))?\s*`([\s\S]*?)`/g;
 
 /** Tiny tokenizer for Dexie schema mini-DSL. */
 // Note: order matters; '++' must come before '+' so we don't split it.
