@@ -244,22 +244,7 @@ function tokenizeSchemaContent(
   }
 }
 
-/**
- * General rule: If a line in the document contains '#', mark from '#' to EOL as 'comment'.
- * This is independent of Dexie schema and applies to the whole file (as requested).
- */
-function tokenizeHashCommentsWholeFile(builder: vscode.SemanticTokensBuilder, doc: vscode.TextDocument) {
-  const lineCount = doc.lineCount;
-  for (let i = 0; i < lineCount; i++) {
-    const lineText = doc.lineAt(i).text;
-    const idx = lineText.indexOf('#');
-    if (idx !== -1) {
-      const abs = doc.offsetAt(new vscode.Position(i, idx));
-      const len = lineText.length - idx;
-      pushToken(builder, doc, abs, len, 'comment');
-    }
-  }
-}
+
 
 export function activate(context: vscode.ExtensionContext) {
   // Allows us to trigger a semantic token refresh on demand
@@ -291,10 +276,7 @@ export function activate(context: vscode.ExtensionContext) {
           }
         }
       } else {
-        // 1) Global '#' comment rule across the entire file
-        tokenizeHashCommentsWholeFile(builder, document);
-
-        // 2) Dexie schema inside db.version(...).stores({ key: `...` })
+        // Find Dexie schema inside db.version(...).stores({ key: `...` }) and Table`...`
         const ranges = findSchemaTemplateRanges(text);
         for (const r of ranges) {
           const schema = text.slice(r.start, r.end);
