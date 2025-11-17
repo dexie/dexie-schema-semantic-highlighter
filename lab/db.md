@@ -1,13 +1,13 @@
 ```ts
 
-const db = new Dexie('myDexie').version(1).stores({
-  friends: table<Friend>`
+const db = new Dexie('myDexie').stores({
+  friends: Table<Friend>`
     ++id
     name: Collated
     age
     doc: Y.Doc
   `,
-  pets: table(Pet)`
+  pets: Table(Pet)`
     @id
     name
     age
@@ -19,6 +19,8 @@ class MyDexie extends Dexie {
   // Friends table
   friends = Table<Friend> `
     ++id
+    name
+    age
   `
   // Pets table
   pets = Table(Pet)`
